@@ -25,9 +25,9 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Models
         [Range(1, 999)]
         public int Hours { get; set; }
         public Priority Priority { get; set; }
-        public int ProjectsId { get; set; }
+        public int ProjectId { get; set; }
 
-        [ForeignKey("ProjectsId")]
+        [ForeignKey("ProjectId")]
         public virtual Project Project { get; set; }
         //public virtual ICollection<Comment> Comment { get; set; } = new HashSet<Comment>();
         [ForeignKey("DeveloperId")]
