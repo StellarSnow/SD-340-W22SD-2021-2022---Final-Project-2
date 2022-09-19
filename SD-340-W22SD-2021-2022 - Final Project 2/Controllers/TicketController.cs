@@ -22,7 +22,7 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
         public IActionResult Create(int projectId, string name, int hours, Priority priority)
         {
             Ticket ticket = new Ticket();
-            ticket.ProjectId = projectId;
+            ticket.ProjectsId = projectId;
             ticket.Name = name;
             ticket.Hours = hours;
             ticket.Priority = priority;
