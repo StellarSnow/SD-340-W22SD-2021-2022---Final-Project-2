@@ -25,6 +25,8 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Models
         [Required]
         [Range(1, 999)]
         public int Hours { get; set; }
+
+        [Required]
         public Priority Priority { get; set; }
         public int ProjectId { get; set; }
 

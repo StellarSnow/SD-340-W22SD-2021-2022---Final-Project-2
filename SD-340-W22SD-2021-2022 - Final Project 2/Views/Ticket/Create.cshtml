@@ -1,6 +1,6 @@
 ﻿@model Ticket
 
-<h2>Create ticket @ViewBag.ProjectId</h2>
+<h2>Create Ticket @ViewBag.ProjectId</h2>
 
 <form asp-action="Create" asp-controller="Ticket" method="post" asp-route-projectId="@ViewBag.ProjectId">   
     <div class="form-group">
@@ -14,13 +14,15 @@
         <div>
             <span asp-validation-for="Hours" class="text-danger"></span>
         </div>
-        @*<input name="hours" type="number" />
-        <select name="priority">
+        <label asp-for="Priority" class="form-label"></label>
+        <select class="form-control" asp-for="Priority">
             <option value="0">Low</option>
             <option value="1">Medium</option>
             <option value="2">High</option>
-        </select>*@
-        <button type="submit">Create Task</button>
+        </select>
+        <div>
+            <button type="submit">Create Task</button>
+        </div>
     </div>
 </form>
 

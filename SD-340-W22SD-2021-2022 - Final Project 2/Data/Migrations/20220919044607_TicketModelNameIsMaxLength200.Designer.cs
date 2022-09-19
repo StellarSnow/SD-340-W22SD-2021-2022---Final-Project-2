@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SD_340_W22SD_2021_2022___Final_Project_2.Data;
 
@@ -11,9 +12,10 @@ using SD_340_W22SD_2021_2022___Final_Project_2.Data;
 namespace SD_340_W22SD_2021_2022___Final_Project_2.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220919044607_TicketModelNameIsMaxLength200")]
+    partial class TicketModelNameIsMaxLength200
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +36,7 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Data.Migrations
 
                     b.HasIndex("ProjectsId");
 
-                    b.ToTable("ApplicationUserProject", (string)null);
+                    b.ToTable("ApplicationUserProject");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -253,7 +255,7 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Project", (string)null);
+                    b.ToTable("Project");
                 });
 
             modelBuilder.Entity("SD_340_W22SD_2021_2022___Final_Project_2.Models.Ticket", b =>
@@ -290,7 +292,7 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Data.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Ticket", (string)null);
+                    b.ToTable("Ticket");
                 });
 
             modelBuilder.Entity("ApplicationUserProject", b =>
