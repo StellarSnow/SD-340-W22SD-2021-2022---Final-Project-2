@@ -18,6 +18,11 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
             return View();
         }
 
+        public IActionResult Create(int projectId)
+        {
+            return View();
+        }
+
         [HttpPost]
         public IActionResult Create(int projectId, string name, int hours, Priority priority)
         {

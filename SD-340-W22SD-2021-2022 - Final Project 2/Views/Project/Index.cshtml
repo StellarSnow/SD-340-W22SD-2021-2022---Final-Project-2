@@ -22,5 +22,8 @@
     {
         <div>No tasks created for this project</div>
     }
+    <div>
+        <a asp-action="Create" asp-controller="Ticket" asp-route-projectId="@project.Id">Create Ticket</a>
+    </div>
     <hr />
 }
