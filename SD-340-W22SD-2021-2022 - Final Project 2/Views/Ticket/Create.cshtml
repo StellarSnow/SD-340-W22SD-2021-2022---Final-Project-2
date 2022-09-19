@@ -4,6 +4,7 @@
 
 <form asp-action="Create" asp-controller="Ticket" method="post" asp-route-projectId="@ViewBag.ProjectId">   
     <div class="form-group">
+        <input asp-for="ProjectId" type="hidden" name="ProjectId" value="@ViewBag.ProjectId" />
         <label asp-for="Name" class="form-label"></label>
         <input asp-for="Name" class="form-control" />
         <div>
