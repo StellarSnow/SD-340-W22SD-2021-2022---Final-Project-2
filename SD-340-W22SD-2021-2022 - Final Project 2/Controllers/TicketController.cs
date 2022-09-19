@@ -30,12 +30,12 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
         public IActionResult Create(int projectId, 
             [Bind("Completed, Name, Hours, Priority, ProjectId")] Ticket ticket)
         {
-            if (ModelState.IsValid)
+            try
             {
                 _context.Ticket.Add(ticket);
                 _context.SaveChanges();
             }
-            else
+            catch (Exception ex)
             {
                 return BadRequest();
             }
