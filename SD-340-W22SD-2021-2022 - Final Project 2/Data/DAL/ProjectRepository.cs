@@ -1,4 +1,5 @@
-﻿using SD_340_W22SD_2021_2022___Final_Project_2.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using SD_340_W22SD_2021_2022___Final_Project_2.Models;
 
 namespace SD_340_W22SD_2021_2022___Final_Project_2.Data.DAL
 {
@@ -24,6 +25,10 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Data.DAL
             return _db.Project.Find(id);
         }
 
+        public Project GetProjectWithDevelopers(int id)
+        {
+            return _db.Project.Include(p => p.Developers).FirstOrDefault(p => p.Id == id);
+        }
 
         public Project Get(Func<Project, bool> predicate)
         {
@@ -43,6 +48,11 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Data.DAL
         public ICollection<ApplicationUser> GetAllUsers()
         {
             return _db.Users.ToList();
+        }
+        
+        public void Update(Project entity)
+        {
+            throw new NotImplementedException();
         }
 
         public ApplicationUser FindUser (int userId)

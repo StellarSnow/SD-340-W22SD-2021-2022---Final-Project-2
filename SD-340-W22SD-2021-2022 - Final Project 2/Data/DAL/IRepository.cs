@@ -9,9 +9,10 @@
         T Get(int id);
         T Get (Func<T, bool> predicate);
         ICollection<T> GetAll();
-        ICollection<T> GetAll (Func<T, bool> predicate);    
+        ICollection<T> GetAll (Func<T, bool> predicate);
+        void Update(T entity);
 
-        
+
         //delete
         void Delete(T entity);
 
