@@ -70,6 +70,40 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Data.BLL
             }
         }
 
+        public async Task<ToggleTicketBLLViewModel> ToggleTicket(ClaimsPrincipal user , int ticketId)
+        {
+            try
+            {
+                ApplicationUser currentUser = await _userManager.GetUserAsync(user);
 
+                Ticket ticket = _ticketRepository.GetTicketWithTaskOwners(ticketId);
+
+                if (ticket.TaskOwners.FirstOrDefault(to => to.Id == currentUser.Id) == null)
+                {
+                    return new ToggleTicketBLLViewModel()
+                    {
+                        Unauthorized = true
+                    };
+                }
+
+                ticket.Completed = !ticket.Completed;
+
+                _ticketRepository.Update(ticket);
+
+                _ticketRepository.Save();
+
+                return new ToggleTicketBLLViewModel()
+                {
+                    Succeeded = true
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ToggleTicketBLLViewModel()
+                {
+                    Succeeded = false
+                };
+            }
+        }
     }
 }

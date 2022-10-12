@@ -31,6 +31,11 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Data.DAL
             return _db.Ticket.Include(t => t.TaskWatchers).FirstOrDefault(t => t.Id == id);
         }
 
+        public Ticket GetTicketWithTaskOwners(int id)
+        {
+            return _db.Ticket.Include(t => t.TaskOwners).FirstOrDefault(t => t.Id == id);
+        }
+
         public Ticket Get(Func<Ticket, bool> predicate)
         {
             return _db.Ticket.First(predicate);

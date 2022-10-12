@@ -93,24 +93,17 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
         [HttpPost]
         public async Task<IActionResult> ToggleTicket(int projectId, int ticketId)
         {
-            try
+            ToggleTicketBLLViewModel viewModel = await _ticketBLL.ToggleTicket(User, ticketId);
+
+            if (viewModel.Unauthorized)
             {
-                ApplicationUser currentUser = await _context.Users.Include(u => u.OwnedTickets).FirstAsync(u => u.UserName == User.Identity.Name);
-                Ticket ticket = await _context.Ticket.Include(t => t.TaskOwners).FirstAsync(t => t.Id == ticketId);
-
-                if (ticket.TaskOwners.FirstOrDefault(to => to.Id == currentUser.Id) == null)
-                {
-                    return Unauthorized("Only developers who are a task owner of this project can mark a task as complete");
-                }
-
-                ticket.Completed = !ticket.Completed;
-
-                _context.Ticket.Update(ticket);
-                await _context.SaveChangesAsync();
-
+                return Unauthorized("Only developers who are a task owner of this project can mark a task as complete");
+            }
+            else if (viewModel.Succeeded)
+            {
                 return RedirectToAction("Details", "Project", new { projectId = projectId });
             }
-            catch (Exception ex)
+            else
             {
                 return BadRequest();
             }
