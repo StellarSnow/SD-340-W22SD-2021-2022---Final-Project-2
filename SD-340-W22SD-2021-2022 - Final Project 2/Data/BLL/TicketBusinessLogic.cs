@@ -4,6 +4,7 @@ using SD_340_W22SD_2021_2022___Final_Project_2.Data.DAL;
 using SD_340_W22SD_2021_2022___Final_Project_2.Models;
 using SD_340_W22SD_2021_2022___Final_Project_2.Models.ViewModels;
 using System.Security.Claims;
+using static Humanizer.In;
 
 namespace SD_340_W22SD_2021_2022___Final_Project_2.Data.BLL
 {
@@ -70,7 +71,7 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Data.BLL
             }
         }
 
-        public async Task<ToggleTicketBLLViewModel> ToggleTicket(ClaimsPrincipal user , int ticketId)
+        public async Task<ToggleTicketBLLViewModel> ToggleTicketAsync(ClaimsPrincipal user , int ticketId)
         {
             try
             {
@@ -100,6 +101,41 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Data.BLL
             catch (Exception ex)
             {
                 return new ToggleTicketBLLViewModel()
+                {
+                    Succeeded = false
+                };
+            }
+        }
+
+        public async Task<ChangeRequiredHoursAsyncBLLViewModel> ChangeRequiredHoursAsync(ClaimsPrincipal user, int ticketId, int hours)
+        {
+            try
+            {
+                ApplicationUser currentUser = await  _userManager.GetUserAsync(user);
+                Ticket ticket = _ticketRepository.GetTicketWithTaskOwners(ticketId);
+
+                if (ticket.TaskOwners.FirstOrDefault(to => to.Id == currentUser.Id) == null)
+                {
+                    return new ChangeRequiredHoursAsyncBLLViewModel()
+                    {
+                        Unauthorized = true
+                    };
+                };
+
+                ticket.Hours = hours;
+                
+                _ticketRepository.Update(ticket);
+                
+                _ticketRepository.Save();
+
+                return new ChangeRequiredHoursAsyncBLLViewModel()
+                {
+                    Succeeded = true
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ChangeRequiredHoursAsyncBLLViewModel()
                 {
                     Succeeded = false
                 };
