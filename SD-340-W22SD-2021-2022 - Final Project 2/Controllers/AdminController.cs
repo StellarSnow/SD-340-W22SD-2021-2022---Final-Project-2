@@ -44,7 +44,8 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
                 return BadRequest();
             }
 
-            await _userManager.AddToRoleAsync(user, "Developer");
+            int idUser = Int32.Parse(userId);
+            _bll.AssignDeveloper(idUser);
 
             return RedirectToAction(nameof(UnassignedDevelopers));
         }
@@ -59,7 +60,8 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
                 return BadRequest();
             }
 
-            await _userManager.AddToRoleAsync(user, "Project Manager");
+            int idUser = Int32.Parse(userId);
+            _bll.AssignProjectManager(idUser);
 
             return RedirectToAction(nameof(UnassignedDevelopers));
         }

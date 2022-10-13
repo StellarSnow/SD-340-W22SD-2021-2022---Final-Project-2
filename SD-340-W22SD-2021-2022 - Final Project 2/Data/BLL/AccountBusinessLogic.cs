@@ -29,10 +29,14 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Data.BLL
         }
 
         
-        public void CreateProject(string name)
+        public async Task CreateProjectAsync(string[] developerId)
         {   
             Project newProject = new Project();
-            newProject.Name = name;
+            foreach (String developer in developerId)
+            {
+                ApplicationUser dev = await _userManager.FindByIdAsync(developer);
+                newProject.Developers.Add(dev);
+            }
             _repo.Add(newProject);
         }
 
