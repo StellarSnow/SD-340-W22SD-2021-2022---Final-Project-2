@@ -12,12 +12,14 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
     public class CommentController : Controller
     {
         private readonly CommentBusinessLogic commentBL;
+        private readonly TicketBusinessLogic ticketBL;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public CommentController(ApplicationDbContext context,
             UserManager<ApplicationUser> userManager)
         {
             commentBL = new CommentBusinessLogic(new CommentRepository(context));
+            ticketBL = new TicketBusinessLogic(new ticketRepository(context));
             _userManager = userManager;
         }
 
@@ -53,10 +55,7 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
                 bool taskWatchers = true;
 
                 ApplicationUser currentUser = await _context.Users.Include(u => u.OwnedTickets).FirstAsync(u => u.UserName == User.Identity.Name);
-                Ticket checkTicket = await _context.Ticket
-                    .Include(t => t.TaskOwners)
-                    .Include(t => t.TaskWatchers)
-                    .FirstAsync(t => t.Id == NewComment.TicketId);
+                Ticket checkTicket = ticketBL.FindTicketById(NewComment.TicketId);
 
                 if (checkTicket.TaskOwners.FirstOrDefault(to => to.Id == currentUser.Id) == null)
                 {
@@ -84,7 +83,7 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
 
                 ApplicationUser user = await _userManager.FindByNameAsync(userName);
 
-                Ticket ticket = await _context.Ticket.FindAsync(NewComment.TicketId);
+                Ticket ticket = ticketBL.FindTicketById(NewComment.TicketId);
 
                 commentBL.CreateAndSaveComment(NewComment, ticket, user);
             }
