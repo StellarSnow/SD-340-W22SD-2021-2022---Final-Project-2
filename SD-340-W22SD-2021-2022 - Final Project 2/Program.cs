@@ -69,6 +69,7 @@ app.MapGet("/details/{projectID}", (string projectID, ApplicationDbContext db) =
 app.MapGet("/Comment/CommentsForTask?ticketId={ticketID}", (string ticketID, ApplicationDbContext db) =>
 {
     TicketRepository repo = new TicketRepository(db);
+
     try    
     {
         return repo.Get(int.Parse(ticketID));
@@ -85,7 +86,7 @@ app.MapGet("/Project/Create/{name}", (string name, ApplicationDbContext db) =>
 
     try
     {
-        accountBusinessLogic.CreateProject(name);
+        //accountBusinessLogic.CreateProject(name);
         return Results.Ok();
     }
     catch (Exception e)

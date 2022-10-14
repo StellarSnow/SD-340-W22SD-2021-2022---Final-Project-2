@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SD_340_W22SD_2021_2022___Final_Project_2.Data.DAL;
 using SD_340_W22SD_2021_2022___Final_Project_2.Models;
 using SD_340_W22SD_2021_2022___Final_Project_2.Models.ViewModels;
+using System.Net.Sockets;
 using System.Security.Claims;
 using static Humanizer.In;
 
@@ -13,6 +14,7 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Data.BLL
         private TicketRepository _ticketRepository;
         private ProjectRepository _projectRepository;
         private UserManager<ApplicationUser> _userManager;
+
         public TicketBusinessLogic(TicketRepository ticketRepository,
             ProjectRepository projectRepository,
             UserManager<ApplicationUser> userManager)
@@ -21,6 +23,40 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Data.BLL
             _userManager = userManager;
             _projectRepository = projectRepository;
         }
+
+        public async Task<CreateTicketBLLViewModel> CreateTicket(Ticket ticket,
+            int projectId, string[] taskOwnerIds, Priority priority)
+        {
+            if (taskOwnerIds.Count() == 0)
+            {
+                return new CreateTicketBLLViewModel()
+                {
+                    Succeeded = false
+                };
+            }
+
+            Ticket newTicket = new Ticket();
+            newTicket.ProjectId = projectId;
+            newTicket.Name = ticket.Name;
+            newTicket.Hours = ticket.Hours;
+            newTicket.Priority = priority;
+            newTicket.Completed = false;
+
+            foreach (String taskOwnerId in taskOwnerIds)
+            {
+                ApplicationUser dev = await _userManager.FindByIdAsync(taskOwnerId);
+                newTicket.TaskOwners.Add(dev);
+            }
+
+            _ticketRepository.Add(newTicket);
+            _ticketRepository.Save();
+
+            return new CreateTicketBLLViewModel()
+            {
+                Succeeded = true
+            };
+        }
+
         public ICollection<Comment> CommentsOnTask(int ticketID)
         {            
             return _ticketRepository.Get(ticketID).Comment.ToList();

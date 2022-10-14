@@ -66,28 +66,16 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
             //    return RedirectToAction("Create", new { projectId = projectId });
             //}
 
-            if (taskOwnerIds.Count() == 0)
+            CreateTicketBLLViewModel viewModel = await _ticketBLL.CreateTicket(ticket, projectId, taskOwnerIds, priority);
+
+            if (!viewModel.Succeeded)
             {
                 return RedirectToAction("Create", new { projectId = projectId });
             }
-
-            Ticket newTicket = new Ticket();
-            newTicket.ProjectId = projectId;
-            newTicket.Name = ticket.Name;
-            newTicket.Hours = ticket.Hours;
-            newTicket.Priority = priority;
-            newTicket.Completed = false;
-
-            foreach (String taskOwnerId in taskOwnerIds)
+            else
             {
-                ApplicationUser dev = await _userManager.FindByIdAsync(taskOwnerId);
-                newTicket.TaskOwners.Add(dev);
+                return RedirectToAction("Index", "Project");
             }
-
-            await _context.Ticket.AddAsync(newTicket);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Index", "Project");
         }
 
         [HttpPost]

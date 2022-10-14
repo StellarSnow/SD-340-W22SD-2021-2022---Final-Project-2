@@ -14,7 +14,9 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
     {
 
         private readonly TicketRepository _ticketRepository;
+        private readonly CommentRepository _commentRepository;
         private TicketBusinessLogic _ticketBLL;
+        private CommentsBusinessLogicLayer _commentBLL;
         private ApplicationDbContext _context;
         private ProjectRepository _projectRepository;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -23,7 +25,9 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
             UserManager<ApplicationUser> userManager)
         {
             _ticketRepository = new TicketRepository(context);
+            _commentRepository = new CommentRepository(context);
             _ticketBLL = new TicketBusinessLogic(_ticketRepository, _projectRepository, userManager);
+            _commentBLL = new CommentsBusinessLogicLayer(context, _commentRepository, _ticketRepository, userManager);
             _context = context;
             _userManager = userManager;
         }
@@ -51,65 +55,23 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles="Developer")]
+        [Authorize(Roles = "Developer")]
         public async Task<IActionResult> Create([Bind("Id, Content, TicketId, Ticket, UserId, User")] Comment NewComment)
         {
-            try
+            CreateCommentBLLViewModel viewModel = await _commentBLL.CreateComment(User, NewComment);
+
+            if (viewModel.Unauthorized)
             {
-                bool taskOwners = true;
-                bool taskWatchers = true;
-
-                ApplicationUser currentUser = await _context.Users.Include(u => u.OwnedTickets).FirstAsync(u => u.UserName == User.Identity.Name);
-                Ticket checkTicket = await _context.Ticket
-                    .Include(t => t.TaskOwners)
-                    .Include(t => t.TaskWatchers)
-                    .FirstAsync(t => t.Id == NewComment.TicketId);
-
-                if (checkTicket.TaskOwners.FirstOrDefault(to => to.Id == currentUser.Id) == null)
-                {
-                    taskOwners = false;
-                }
-
-                if (checkTicket.TaskWatchers.FirstOrDefault(to => to.Id == currentUser.Id) == null)
-                {
-                    taskWatchers = false;
-                }
-
-                if (!taskOwners && !taskWatchers)
-                {
-                    return Unauthorized("Only task owners and task watchers can add comments to this task");
-                }
+                return Unauthorized("Only task owners and task watchers can add comments to this task");
             }
-            catch (Exception ex)
+            else if (!viewModel.Succeeded)
             {
                 return RedirectToAction("Index", "Project");
             }
-
-            Comment comment = new Comment();
-
-            try
+            else
             {
-                string userName = User.Identity.Name;
-
-                ApplicationUser user = await _userManager.FindByNameAsync(userName);
-
-                Ticket ticket = await _context.Ticket.FindAsync(NewComment.TicketId);
-
-                comment.TicketId = NewComment.TicketId;
-                comment.Ticket = ticket;
-                comment.Content = NewComment.Content;
-                comment.User = user;
-                comment.UserId = user.Id;
-
-                _context.Comment.Add(comment);
-                await _context.SaveChangesAsync();
+                return RedirectToAction("CommentsForTask", new { ticketId = NewComment.TicketId });
             }
-            catch (Exception ex)
-            {
-                return RedirectToAction("Index", "Project");
-            }
-
-            return RedirectToAction("CommentsForTask", new { ticketId = NewComment.TicketId });
         }
     }
 }
