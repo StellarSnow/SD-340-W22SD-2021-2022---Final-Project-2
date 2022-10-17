@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SD_340_W22SD_2021_2022___Final_Project_2.Data;
+using SD_340_W22SD_2021_2022___Final_Project_2.Data.BLL;
 using SD_340_W22SD_2021_2022___Final_Project_2.Models;
 
 namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
@@ -12,11 +13,13 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
     {
         private ApplicationDbContext _context;
         private UserManager<ApplicationUser> _userManager;
+        private AdminBusinessLogicLayer _bll;
 
         public AdminController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
+            _bll = new AdminBusinessLogicLayer(context);
         }
 
         public IActionResult Index()
@@ -26,8 +29,8 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
 
         public IActionResult UnassignedDevelopers()
         {
-            List<string> userIds = _context.UserRoles.Select(ur => ur.UserId).ToList();
-            List<ApplicationUser> users = _context.Users.Where(u => !userIds.Contains(u.Id)).ToList();
+            List<ApplicationUser> users = _bll.GetUnassignedDevelopers();
+            
             return View(users);
         }
 
@@ -41,7 +44,8 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
                 return BadRequest();
             }
 
-            await _userManager.AddToRoleAsync(user, "Developer");
+            int idUser = Int32.Parse(userId);
+            _bll.AssignDeveloper(idUser);
 
             return RedirectToAction(nameof(UnassignedDevelopers));
         }
@@ -56,7 +60,8 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
                 return BadRequest();
             }
 
-            await _userManager.AddToRoleAsync(user, "Project Manager");
+            int idUser = Int32.Parse(userId);
+            _bll.AssignProjectManager(idUser);
 
             return RedirectToAction(nameof(UnassignedDevelopers));
         }

@@ -5,11 +5,15 @@ using Microsoft.EntityFrameworkCore;
 using SD_340_W22SD_2021_2022___Final_Project_2.Data;
 using SD_340_W22SD_2021_2022___Final_Project_2.Models;
 using SD_340_W22SD_2021_2022___Final_Project_2.Models.ViewModels;
+using SD_340_W22SD_2021_2022___Final_Project_2.Data.DAL;
+using SD_340_W22SD_2021_2022___Final_Project_2.Data.BLL;
 
 namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
 {
     public class ProjectController : Controller
     {
+        private ProjectRepository _projectRepository;
+        private AccountBusinessLogic _accountBLL;
         private ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
@@ -18,6 +22,8 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
         {
             _context = context;
             _userManager = userManager;
+            _projectRepository = new ProjectRepository(context);
+            _accountBLL = new AccountBusinessLogic(_projectRepository);
         }
 
         [Authorize(Roles = "Project Manager, Developer")]
@@ -133,18 +139,9 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
             {
                 return BadRequest();
             }
-
             try
             {
-                foreach (String developerId in developerIds)
-                {
-                    ApplicationUser dev = await _userManager.FindByIdAsync(developerId);
-                    project.Developers.Add(dev);
-                }
-
-                _context.Project.Add(project);
-                _context.SaveChanges();
-
+                await _accountBLL.CreateProjectAsync(developerIds);
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
@@ -155,22 +152,7 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
 
         public IActionResult Details(int projectId)
         {
-            Project? project = _context.Project
-                .Include(p => p.Ticket)
-                .ThenInclude(t => t.TaskWatchers)
-                .Include(u => u.Developers)
-                .ThenInclude(d => d.WatchedTickets)
-                .FirstOrDefault(p => p.Id == projectId);
-
-            if (project == null)
-            {
-                return NotFound();
-            }
-
-            List<Ticket> tickets = project.Ticket.ToList();
-            List<ApplicationUser> developers = project.Developers.ToList();
-
-            return View(project);
+            return View(_accountBLL.ProjectDetails(projectId));
         }
     }
 }
