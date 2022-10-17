@@ -6,7 +6,7 @@ namespace SD_340_Test_Project
         [TestMethod]
         public void TestMethod1()
         {
-//test
+//test code
         }
     }
 }
