@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SD_340_W22SD_2021_2022___Final_Project_2.BLL;
+using SD_340_W22SD_2021_2022___Final_Project_2.DAL;
 using SD_340_W22SD_2021_2022___Final_Project_2.Data;
 using SD_340_W22SD_2021_2022___Final_Project_2.Models;
 
@@ -10,13 +12,13 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
-        private ApplicationDbContext _context;
         private UserManager<ApplicationUser> _userManager;
+        private readonly UserBusinessLogic userBL;
 
         public AdminController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
-            _context = context;
             _userManager = userManager;
+            userBL = new UserBusinessLogic(_userManager);
         }
 
         public IActionResult Index()
@@ -24,24 +26,23 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
             return View();
         }
 
-        public IActionResult UnassignedDevelopers()
+        public async Task<IActionResult> UnassignedDevelopers()
         {
-            List<string> userIds = _context.UserRoles.Select(ur => ur.UserId).ToList();
-            List<ApplicationUser> users = _context.Users.Where(u => !userIds.Contains(u.Id)).ToList();
-            return View(users);
+            List<ApplicationUser> userWithoutRoles = await userBL.GetAllUsersWithoutRoleAsync();
+            return View(userWithoutRoles);
         }
 
         [HttpPost]
         public async Task<IActionResult> AssignDeveloper(string userId)
         {
-            ApplicationUser? user = _context.Users.Find(userId);
+            ApplicationUser? user = userBL.GetUserByUserId(userId);
 
             if (user == null)
             {
                 return BadRequest();
             }
 
-            await _userManager.AddToRoleAsync(user, "Developer");
+            await userBL.AssignUserToARoleAsync(user, "Developer");
 
             return RedirectToAction(nameof(UnassignedDevelopers));
         }
@@ -49,14 +50,14 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Controllers
         [HttpPost]
         public async Task<IActionResult> AssignProjectManager(string userId)
         {
-            ApplicationUser? user = _context.Users.Find(userId);
+            ApplicationUser? user = userBL.GetUserByUserId(userId);
 
             if (user == null)
             {
                 return BadRequest();
             }
 
-            await _userManager.AddToRoleAsync(user, "Project Manager");
+            await userBL.AssignUserToARoleAsync(user, "Project Manager");
 
             return RedirectToAction(nameof(UnassignedDevelopers));
         }
