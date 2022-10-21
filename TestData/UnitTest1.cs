@@ -14,13 +14,36 @@ namespace TestData
     public class DeveloperTests
     {
         [TestMethod]
-        public void AssignDev()
+        public void AssignDevTestOne()
         {
             var dbContext = new Mock<ApplicationDbContext>();
             var MockProjRepo = new Mock<ProjectRepository>();
             var userManager = new Mock<FakeUserManager>();
             var Admin = new AdminBusinessLogicLayer(dbContext.Object, userManager.Object, MockProjRepo.Object);
             
+            ApplicationUser testUser1 = new ApplicationUser { UserName = "Test1", Email = "Test1@Test.com", Id = "1" };
+            ApplicationUser testUser2 = new ApplicationUser { UserName = "Test2", Email = "Test2@Test.com", Id = "2" };
+
+            bool methodCall = false;
+
+            userManager.Setup(x => x.AddToRoleAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Callback(() => { methodCall = true; });
+            MockProjRepo.Setup(x => x.FindUser(It.IsAny<int>())).Returns(testUser1);
+            MockProjRepo.Setup(x => x.FindUser(It.IsAny<int>())).Returns(testUser2);
+
+
+            Admin.AssignDeveloper(1);
+            Admin.AssignDeveloper(2);
+            Assert.IsTrue(methodCall);
+        }
+
+        [TestMethod]
+        public void AssignDevTestTwo()
+        {
+            var dbContext = new Mock<ApplicationDbContext>();
+            var MockProjRepo = new Mock<ProjectRepository>();
+            var userManager = new Mock<FakeUserManager>();
+            var Admin = new AdminBusinessLogicLayer(dbContext.Object, userManager.Object, MockProjRepo.Object);
+
             ApplicationUser testUser = new ApplicationUser { UserName = "Test", Email = "Test@Test.com", Id = "1" };
 
             bool methodCall = false;
@@ -33,7 +56,31 @@ namespace TestData
         }
 
         [TestMethod]
-        public void AssignManager()
+        public void AssignManagerTestOne()
+        {
+            var dbContext = new Mock<ApplicationDbContext>();
+            var MockProjRepo = new Mock<ProjectRepository>();
+            var userManager = new Mock<FakeUserManager>();
+            var Admin = new AdminBusinessLogicLayer(dbContext.Object, userManager.Object, MockProjRepo.Object);
+
+            ApplicationUser testUser1 = new ApplicationUser { UserName = "Test1", Email = "Test1@Test.com", Id = "1" };
+            ApplicationUser testUser2 = new ApplicationUser { UserName = "Test2", Email = "Test2@Test.com", Id = "2" };
+
+            bool methodCall = false;
+
+            userManager.Setup(x => x.AddToRoleAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Callback(() => { methodCall = true; });
+            MockProjRepo.Setup(x => x.FindUser(It.IsAny<int>())).Returns(testUser1);
+            MockProjRepo.Setup(x => x.FindUser(It.IsAny<int>())).Returns(testUser2);
+
+            Admin.AssignProjectManager(1);
+            Admin.AssignProjectManager(2);
+
+            Assert.IsTrue(methodCall);
+        }
+
+
+        [TestMethod]
+        public void AssignManagerTestTwo()
         {
             var dbContext = new Mock<ApplicationDbContext>();
             var MockProjRepo = new Mock<ProjectRepository>();
