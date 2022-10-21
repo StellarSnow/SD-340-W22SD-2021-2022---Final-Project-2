@@ -11,6 +11,12 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Data.BLL
         private ProjectRepository _repo;
         private UserManager<ApplicationUser> _userManager;
 
+        public AdminBusinessLogicLayer(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager, ProjectRepository projectRepository)
+        {
+            _repo = projectRepository;
+            _context = dbContext;
+            _userManager = userManager;
+        }
         public AdminBusinessLogicLayer(ApplicationDbContext dbContext)
         {
             _context = dbContext;
