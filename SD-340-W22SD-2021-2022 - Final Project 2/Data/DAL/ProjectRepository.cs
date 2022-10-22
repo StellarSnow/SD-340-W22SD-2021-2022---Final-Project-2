@@ -10,6 +10,9 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Data.DAL
         {
             _db = db;
         }
+        public ProjectRepository()
+        {
+        }
         public void Add(Project entity)
         {
             _db.Project.Add(entity);
@@ -55,7 +58,7 @@ namespace SD_340_W22SD_2021_2022___Final_Project_2.Data.DAL
             throw new NotImplementedException();
         }
 
-        public ApplicationUser FindUser (int userId)
+        public virtual ApplicationUser FindUser (int userId)
         {
             return _db.Users.Find(userId);
         }
